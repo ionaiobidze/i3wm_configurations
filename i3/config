@@ -1,6 +1,6 @@
 #choose the mod key and the font
 set $mod Mod4
-font pango:DejaVu Sans Mono 12
+font pango:DejaVu Sans Mono 13
 
 # Colour preferences
 client.focused #4E0707 #4E0707 #FFFFFF #4E0707 #4E0707
@@ -11,14 +11,16 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 
 # Audio settings
 set $refresh_i3status killall -SIGUSR1 i3status
-bindsym F12 exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym F11 exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
-bindsym F10 exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+
+set $refresh_i3status killall -SIGUSR1 i3status
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
 
 # Window management settings
 floating_modifier $mod
-tiling_drag modifier titlebar
-bindsym $mod+Return exec kitty
+bindsym $mod+Return exec terminator
 bindsym $mod+q kill 
 bindsym $mod+d exec --no-startup-id dmenu_run
 
@@ -44,7 +46,7 @@ bindsym $mod+v split v
 
 # Change container layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
-bindsym $mod+e layout toggle split
+bindsym $mod+Shift+x layout toggle split
 
 # Toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
@@ -53,7 +55,7 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # Focus the parent container
-bindsym $mod+a focus parent
+bindsym $mod+Shift+a focus parent
 
 # Create workspace variables
 set $ws1 "1"
@@ -64,10 +66,10 @@ set $ws5 "5"
 set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws9 "9󰿎 "
+set $ws10 "10"
 
-# Switch to workspace
+# Workspace switching
 bindsym $mod+1 workspace $ws1
 bindsym $mod+2 workspace $ws2
 bindsym $mod+3 workspace $ws3
@@ -116,32 +118,33 @@ bindsym $mod+r mode "resize"
 
 # i3bar configuration
 bar {
-    tray_output none
-    padding 3px 
+    status_command i3status
+    # tray_output none
     strip_workspace_numbers yes
     colors {
-        background #00000000
-        focused_workspace  #00000000 #00000000 #FF0000
-        inactive_workspace  #00000000 #00000000 #FFFFFF
+        background #141414
+        # statusline #ffffff
+        # separator  #666666
+        focused_workspace  #141414 #141414 #FF0000
+        inactive_workspace  #141414 #141414 #FFFFFF
+	active_workspace    #141414 #141414 #FFFFFF
     }
-    status_command ~/.config/bumblebee-status/bumblebee-status \
- -t  wine_red \
- -m  cpu memory date time battery
 }
-
 # Shortcuts
-bindsym $mod+w exec brave 
-bindsym $mod+f exec /home/iona/Applications/shortcut_skripts/symbols.sh
+bindsym $mod+w exec brave --password-store=basic 
+
 bindsym $mod+c exec leafpad ./.config/i3/config
 bindsym $mod+b exec blueman-manager && killall blueman-tray
-bindsym $mod+k exec thunar Documents/K_EW_Cem3/
-bindsym $mod+h exec thunar
-bindsym $mod+i exec /home/iona/Applications/idea-IU-232.10072.27/bin/idea.sh
-bindsym --release Print exec "scrot -s /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png && rm /tmp/screenshot.png"
+bindsym $mod+k exec thunar /home/iona/Documents/K_EW/
+bindsym $mod+h exec thunar 
+
+# Screenshot shortcut
+bindsym --release $mod+Shift+p exec "scrot -s /tmp/screenshot.png && xclip -selection clipboard -t image/png -i /tmp/screenshot.png && rm /tmp/screenshot.png"
+
 bindsym $mod+p exec pavucontrol -t 3
-bindsym F1 exec systemctl suspend
-bindsym F5 exec brightnessctl s 5%-
-bindsym F6 exec brightnessctl s 5%+
+bindsym XF86MonBrightnessUp exec brightnessctl s 5%+
+bindsym XF86MonBrightnessDown exec brightnessctl s 5%-
+
 
 # Startup commands
 exec_always nitrogen --restore
@@ -149,3 +152,15 @@ exec --no-startup-id i3-msg workspace 1
 
 # Keyboard layout
 exec_always --no-startup-id setxkbmap -layout us,ge && setxkbmap -option 'grp:alt_shift_toggle'
+
+#automatiurad amauntebs driverebs
+exec --no-startup-id udiskie &
+
+#makes pip windows sticky for firefox
+for_window [title="^Picture-in-Picture$"] floating enable
+for_window [title="^Picture-in-Picture$"] sticky enable
+for_window [title="^Picture-in-Picture$"] border none
+
+#battery notification
+exec_always --no-startup-id /home/iona/Applications/shortcut_skripts/battery_allerts.sh
+
