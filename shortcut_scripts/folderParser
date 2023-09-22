@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Check if a directory is provided as an argument
+if [ -z "$1" ]; then
+  echo "Usage: $0 <directory>"
+  exit 1
+fi
+
+# Output file
+output_file="output.txt"
+> "$output_file"  # Clear the output file if it exists
+
+# Function to process the directory
+process_dir() {
+  local current_dir="$1"
+  local prefix="$2"
+  
+  # Loop through the files and subdirectories in the current directory
+  for entry in "$current_dir"/*; do
+    if [ -d "$entry" ]; then
+      # If it's a directory, recurse into it
+      local child_dir_name=$(basename "$entry")
+      process_dir "$entry" "$prefix - $child_dir_name"
+    elif [ -f "$entry" ]; then
+      # If it's a file, output the file info and content
+      local file_name=$(basename "$entry")
+      local file_type="${file_name##*.}"
+      
+      echo "${prefix} - ${file_name}:" >> "$output_file"
+      cat "$entry" >> "$output_file"
+      echo -e "\n" >> "$output_file"  # Add a newline between files
+    fi
+  done
+}
+
+# Get the parent folder name
+parent_folder=$(basename "$1")
+process_dir "$1" "$parent_folder"
+
+echo "Output written to $output_file"
